@@ -2,7 +2,13 @@ import json
 import os
 from datetime import date, timedelta
 
-from extract import requests_extract, selenium_extract, parse_kitco, parse_yahoo
+from extract import (
+    requests_extract,
+    selenium_extract,
+    parse_kitco,
+    parse_yahoo,
+    transform_dfs
+)
 
 
 CFG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
@@ -39,6 +45,7 @@ for name, getter in sources:
         continue
 
     try:
+        transform_dfs(df)
         out_dir = "csv"
         os.makedirs(out_dir, exist_ok=True)
         csv_name = os.path.join(out_dir, f"{name}.csv")

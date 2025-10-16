@@ -20,7 +20,7 @@ def get_pgm(metals, start, end):
 
 def fetch_csv_url(url, data, timeout=15):
     response = requests.post(url=url, data=data, timeout=timeout)
-    csv_url = json.loads(response.text)['url']
+    csv_url = json.loads(response.text)["url"]
     if not csv_url:
         raise ValueError("Missing 'url' in response JSON")
     return csv_url
@@ -61,7 +61,17 @@ def parse_kitco(driver):
         rows_split[i : i + len(index)] for i in range(0, len(rows_split), len(index))
     ]
 
-    data = pd.DataFrame({col: metals[i] for i, col in enumerate(columns)}, index=index)
+    today_index = driver.find_element(By.CSS_SELECTOR, "h1.kitco-fix_dateTitle__F8qHQ")
+    today_price = driver.find_elements(By.CSS_SELECTOR, "div.kitco-fix_item__InPYR h2")
+    price_split = [r.text for r in today_price]
+
+    data_today = pd.DataFrame(
+        data=[price_split], index=[today_index.text], columns=columns
+    )
+    data_history = pd.DataFrame(
+        {col: metals[i] for i, col in enumerate(columns)}, index=index
+    )
+    data = pd.concat([data_today, data_history])
     return data
 
 
@@ -96,4 +106,16 @@ def selenium_extract(url, res, timeout=30):
         except Exception:
             pass
 
-    
+
+def transform_dfs(df):
+    if not df[df.isin(["N/A", "-", "None"]).any(axis=1)].empty:
+        df.replace(["-", "N/A", "None"], pd.NA, inplace=True)
+        df.ffill(inplace=True)
+
+    df.index = pd.to_datetime(df.index, errors="coerce", dayfirst=True)
+    num_cols = df.columns
+    df[num_cols] = df[num_cols].apply(
+        lambda col: pd.to_numeric(col.astype(str).str.replace(",", ""), errors="coerce")
+    )
+    df.sort_index(ascending=False, inplace=True)
+    return df
