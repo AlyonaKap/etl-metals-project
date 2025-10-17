@@ -24,19 +24,18 @@ def connect_firebase():
             cred,
             {"databaseURL": db_url},
         )
-
     return db.reference("/")
 
 
 def load_to_firebase(df, name):
     ref = connect_firebase()
     source_ref = ref.child(name)
+    data_to_update = {}
 
     for date, row in df.iterrows():
         date = date.strftime("%Y-%m-%d")
-        data_dict = row.to_dict()
-        for k, v in data_dict.items():
-            if pd.isna(v):
-                data_dict[k] = None
-        source_ref.child(date).set(data_dict)
+        data_dict = {k: (None if pd.isna(v) else v) for k, v in row.to_dict().items()}
+        data_to_update[date] = data_dict
+        
+    source_ref.update(data_to_update)
     return print(f"{name} data loaded to Firebase")
