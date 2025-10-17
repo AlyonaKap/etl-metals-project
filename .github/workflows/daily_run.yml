@@ -1,0 +1,25 @@
+name: Daily Metal Prices Updates
+
+on:
+  push:
+
+env:
+  FIREBASE_URL: ${{ secrets.FIREBASE_URL}}
+
+
+jobs:
+  Daily-Run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependecies
+        run: pip install -r requirements.txt
+
+      - name: Create credentials file
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > credentials.json
+
+      - name: Run App
+        run: python main.py
