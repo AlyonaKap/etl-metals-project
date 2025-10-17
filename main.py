@@ -9,6 +9,7 @@ from extract import (
     parse_yahoo,
     transform_dfs
 )
+from load import load_to_firebase 
 
 
 CFG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
@@ -29,9 +30,9 @@ sources = [
         lambda: requests_extract(urls["pgm"], pgm["metals"], start_date, today_date),
     ),
     ("kitco", lambda: selenium_extract(urls["kitco"], parse_kitco)),
-    ("gld", lambda: selenium_extract(urls["yahoo"]["gld"], parse_yahoo)),
-    ("sp500", lambda: selenium_extract(urls["yahoo"]["sp500"], parse_yahoo)),
-    ("ftse", lambda: selenium_extract(urls["yahoo"]["ftse"], parse_yahoo)),
+    ("yh_gld", lambda: selenium_extract(urls["yahoo"]["gld"], parse_yahoo)),
+    ("yh_sp500", lambda: selenium_extract(urls["yahoo"]["sp500"], parse_yahoo)),
+    ("yh_ftse", lambda: selenium_extract(urls["yahoo"]["ftse"], parse_yahoo)),
 ]
 
 for name, getter in sources:
@@ -46,10 +47,7 @@ for name, getter in sources:
 
     try:
         transform_dfs(df)
-        out_dir = "csv"
-        os.makedirs(out_dir, exist_ok=True)
-        csv_name = os.path.join(out_dir, f"{name}.csv")
-        df.to_csv(csv_name, index=True)
-        print(f"Saved {csv_name}")
+        #load_to_csv(df,name)
+        load_to_firebase(df, name)
     except Exception as e:
-        print(f"Failed to save {name}: {e}")
+        print(f"Loading failed for {name}: {e}")

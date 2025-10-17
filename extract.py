@@ -108,9 +108,8 @@ def selenium_extract(url, res, timeout=30):
 
 
 def transform_dfs(df):
-    if not df[df.isin(["N/A", "-", "None"]).any(axis=1)].empty:
-        df.replace(["-", "N/A", "None"], pd.NA, inplace=True)
-        df.ffill(inplace=True)
+    if not df[df.isin(["N/A", "None", "-"]).any(axis=1)].empty:
+        df.replace(["N/A", "None", "-"], pd.NA, inplace=True)
 
     df.index = pd.to_datetime(df.index, errors="coerce", dayfirst=True)
     num_cols = df.columns
