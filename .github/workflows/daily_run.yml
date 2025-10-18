@@ -19,7 +19,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Create credentials file
-        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > credentials.json
+        run: |
+          echo "${{ secrets.FIREBASE_CREDENTIALS }}" | base64 --decode > credentials.json
 
       - name: Run App
         run: python main.py
