@@ -1,7 +1,8 @@
 name: Daily Metal Prices Updates
 
 on:
-  push:
+  schedule:
+    - cron: '0 17 * * *'
 
 
 env:
