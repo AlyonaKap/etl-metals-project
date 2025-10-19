@@ -1,8 +1,8 @@
 name: Daily Metal Prices Updates
 
 on:
-  schedule:
-    - cron: '0 17 * * *'
+  push:
+
 
 env:
   FIREBASE_URL: ${{ secrets.FIREBASE_URL}}

@@ -43,6 +43,7 @@ def start_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     return webdriver.Chrome(options=options)
 
 
@@ -93,7 +94,7 @@ def parse_yahoo(driver):
     return df
 
 
-def selenium_extract(url, res, timeout=30):
+def selenium_extract(url, res, timeout=60):
     driver = start_driver()
     try:
         driver.set_page_load_timeout(timeout)
