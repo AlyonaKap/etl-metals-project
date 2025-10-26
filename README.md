@@ -1,0 +1,1 @@
+This is basic extract-transform-load project based on historical metals prices from matthey, kitco and yahoo finance. It contains web scrapping using requests and selenium web driver, transformation using python technologies and loading into firebase realtime database with automatic updates using GitHub actions.
